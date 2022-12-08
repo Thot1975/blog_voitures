@@ -1,7 +1,19 @@
+<div class="container " style="width: 40rem;">
 {{ form_start(form) }}
-{{ form_widget(form) }}
+<div class="row"style="width: 20rem;" >{{ form_row(form.title) }}</div>
+<div class="row">{{ form_row(form.description) }}</div>
+<div class="row" style="width: 20rem;">{{ form_row(form.model) }}</div>
+<div class="row" style="width: 20rem;">{{ form_row(form.prix) }}</div>
+<div class="row" style="width: 20rem;">{{ form_row(form.year) }}</div>
+<div class="row" style="width: 20rem;" >{{ form_row(form.km) }}</div>
+<div class="row" style="width: 20rem;">{{ form_row(form.fuel) }}</div>
+<div class="row">{{ form_row(form.license) }}</div>
+<div class="row" style="width: 20rem;">{{ form_row(form.imgfile) }}</div>
+
+<div class="row" style="width: 20rem;">{{ form_row(form.marque) }}</div>
+
 <div class="d-flex justify-content-center mt-3">
 	<button class="btn btn-success">{{ button_label|default('Save') }}</button>
 </div>
-<button class="btn">{{ button_label|default('Save') }}</button>
+</div>
 {{ form_end(form) }}

@@ -20,8 +20,8 @@
 	<h1 class="text-center">Liste des annonces</h1>
 	<div class="d-flex justify-around">
 		{% for annonce in annonces %}
-			<div class="card" style="width: 20rem;">
-				<img class="card-img-top" src="..." alt="Card image cap">
+			<div class="card" style="width: 25rem;">
+				<img class="card-img-top" src="{{asset('images_directory/' ~ annonce.imgfile )}}" alt="Card image cap">
 				<div class="card-body">
 					<h5 class="card-title">{{annonce.title}}</h5>
 					<p class="card-text">{{annonce.description}}</p>
