@@ -1,0 +1,24 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Hello MainController!{% endblock %}
+
+{% block body %}
+
+
+    <div class="container">
+    <h1 class="text-center">Liste de la Marque</h1>
+        <div class="d-flex justify-around">
+            {% for annonce in marq.annonces %}
+                <div class="card" style="width: 18rem;">
+                    <img class="card-img-top" src="..." alt="Card image cap">
+                    <div class="card-body">
+                        <h5 class="card-title">{{annonce.title}}</h5>
+                        <p class="card-text">{{annonce.description}}</p>
+                        <a href="#" class="btn btn-primary">Go somewhere</a>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+{% endblock %}

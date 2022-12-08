@@ -1,21 +1,33 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Annonces Voitures{% endblock %}
+{% block title %}Annonces Voitures
+{% endblock %}
 {% block body %}
 
-    <div class="container">
-    <h1 class="text-center">Liste des annonces</h1>
-        <div class="d-flex justify-around">
-            {% for annonce in annonces %}
-                <div class="card" style="width: 18rem;">
-                    <img class="card-img-top" src="..." alt="Card image cap">
-                    <div class="card-body">
-                        <h5 class="card-title">{{annonce.title}}</h5>
-                        <p class="card-text">{{annonce.description}}</p>
-                        <a href="#" class="btn btn-primary">Go somewhere</a>
-                    </div>
-                </div>
-            {% endfor %}
-        </div>
-    </div>
-{% endblock %}
+	<table class="table">
+		<tr>
+			<td class="table-primary text-center">Marques</td>
+			        {% for marque in marques %}
+				<tr>
+					<td class="table-primary text-center"><a  href="{{ path('tab', {'id':marque.id}) }}">{{ marque.name }}</a></td>
+				</tr>
+			{% endfor %}
+		</tr>
+	</table>
+</div>
+
+<div class="container" style="width: 80%;">
+	<h1 class="text-center">Liste des annonces</h1>
+	<div class="d-flex justify-around">
+		{% for annonce in annonces %}
+			<div class="card" style="width: 20rem;">
+				<img class="card-img-top" src="..." alt="Card image cap">
+				<div class="card-body">
+					<h5 class="card-title">{{annonce.title}}</h5>
+					<p class="card-text">{{annonce.description}}</p>
+					<a href="#" class="btn btn-primary">Go somewhere</a>
+				</div>
+			</div>
+		{% endfor %}
+	</div>
+</div>{% endblock %}
