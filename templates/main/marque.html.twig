@@ -13,8 +13,8 @@
                     <img class="card-img-top" src="{{asset('images_directory/' ~ annonce.imgfile )}}" alt="Card image cap">
                     <div class="card-body">
                         <h5 class="card-title">{{annonce.title}}</h5>
-                        <p class="card-text">{{annonce.description}}</p>
-                        <a href="#" class="btn btn-primary">Go somewhere</a>
+                        <p class="card-text">{{annonce.description|raw}}</p>
+                        <a href="{{ path('app_annonce_show', {'id' : annonce.id}) }}" class="btn btn-primary">Voir l'annonce</a>
                     </div>
                 </div>
             {% endfor %}

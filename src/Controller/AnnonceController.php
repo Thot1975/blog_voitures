@@ -5,7 +5,9 @@ namespace App\Controller;
 use App\Entity\Annonce;
 use App\Form\AnnonceType;
 use App\Repository\AnnonceRepository;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\BrowserKit\Response as BrowserKitResponse;
 use Symfony\Component\HttpFoundation\File\Exception\FileException;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -16,6 +18,8 @@ use Symfony\Component\String\Slugger\SluggerInterface;
 class AnnonceController extends AbstractController
 {
     #[Route('/', name: 'app_annonce_index', methods: ['GET'])]
+    //sécuriser une route avec un admin
+    #[IsGranted('ROLE_ADMIN')]
     public function index(AnnonceRepository $annonceRepository): Response
     {
         return $this->render('annonce/index.html.twig', [
@@ -25,7 +29,7 @@ class AnnonceController extends AbstractController
 
     #[Route('/new', name: 'app_annonce_new', methods: ['GET', 'POST'])]
     public function new(Request $request, AnnonceRepository $annonceRepository, SluggerInterface $slugger): Response
-    {   
+    {
         $author = $this->getUser();
         $annonce = new Annonce();
         $form = $this->createForm(AnnonceType::class, $annonce);
@@ -34,11 +38,11 @@ class AnnonceController extends AbstractController
         if ($form->isSubmitted() && $form->isValid()) {
             $imageFile = $form->get('imgfile')->getData();
 
-            if($imageFile) {
+            if ($imageFile) {
                 $originalFilename = pathinfo($imageFile->getClientOriginalName(), PATHINFO_FILENAME);
                 // this is needed to safely include the file name as part of the URL
                 $safeFilename = $slugger->slug($originalFilename);
-                $newFilename = $safeFilename.'-'.uniqid().'.'.$imageFile->guessExtension();
+                $newFilename = $safeFilename . '-' . uniqid() . '.' . $imageFile->guessExtension();
                 try {
                     $imageFile->move(
                         $this->getParameter('images_directory'),
@@ -72,27 +76,40 @@ class AnnonceController extends AbstractController
     }
 
     #[Route('/{id}/edit', name: 'app_annonce_edit', methods: ['GET', 'POST'])]
-    public function edit(Request $request, Annonce $annonce, AnnonceRepository $annonceRepository): Response
+    public function edit($id, Request $request, Annonce $annonce, AnnonceRepository $annonceRepository): Response
     {
+        $thisAnnonce = $annonceRepository->find($id);
+        if ($thisAnnonce->getIsVisible() == false) {
+            $this->addFlash('Erreur', 'Cette annonce n\'existe plus');
+            return $this->redirectToRoute('home');
+        }
         $form = $this->createForm(AnnonceType::class, $annonce);
         $form->handleRequest($request);
-
-        if ($form->isSubmitted() && $form->isValid()) {
-            $annonceRepository->save($annonce, true);
-
-            return $this->redirectToRoute('app_annonce_index', [], Response::HTTP_SEE_OTHER);
+        $author = $this->getUser();
+        if ($author == false) {
+            $this->addFlash('Erreur', 'Vous devez avoir un compte pour editer une annonce');
+            return $this->redirectToRoute('home');
         }
-
+        if($this->container->get('security.authorization_checker')->isGranted('ROLE_ADMIN') or $annonce->getAuthor() == $author){
+            if ($form->isSubmitted() && $form->isValid()) {
+                $annonceRepository->save($annonce, true);
+                $this->addFlash('Succès', 'Votre annonce a bien été modifié');
+            return $this->redirectToRoute('home',[], Response::HTTP_SEE_OTHER); 
+        }
         return $this->renderForm('annonce/edit.html.twig', [
             'annonce' => $annonce,
             'form' => $form,
         ]);
+        }
+        $this->addFlash('Erreur', 'Vous devez avoir un compte pour ajouter/editer une annonce');
+            return $this->redirectToRoute('home');
+
     }
 
     #[Route('/{id}', name: 'app_annonce_delete', methods: ['POST'])]
     public function delete(Request $request, Annonce $annonce, AnnonceRepository $annonceRepository): Response
     {
-        if ($this->isCsrfTokenValid('delete'.$annonce->getId(), $request->request->get('_token'))) {
+        if ($this->isCsrfTokenValid('delete' . $annonce->getId(), $request->request->get('_token'))) {
             $annonceRepository->remove($annonce, true);
         }
 
